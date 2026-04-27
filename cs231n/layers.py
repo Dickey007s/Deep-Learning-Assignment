@@ -4,6 +4,44 @@ import numpy as np
 # import numexpr as ne # ~~DELETE LINE~~
 
 
+def softmax_loss(x, y):
+    """
+    Computes the loss and gradient for softmax classification.
+
+    Inputs:
+    - x: Input data, of shape (N, C) where x[i, j] is the score for the jth
+      class for the ith input.
+    - y: Vector of labels, of shape (N,) where y[i] is the label for x[i] and
+      0 <= y[i] < C
+
+    Returns a tuple of:
+    - loss: Scalar giving the loss
+    - dx: Gradient of the loss with respect to x
+    """
+    loss, dx = None, None
+
+    ###########################################################################
+    # TODO: Copy over your solution from A1.
+    ###########################################################################
+    N = x.shape[0]
+
+    x_shift = x - np.max(x, axis=1, keepdims=True)
+
+    probs = np.exp(x_shift)/ np.sum(np.exp(x_shift), axis=1, keepdims=True)    # x_shift 是原输入形状的矩阵，sum 逐个样本特征求和
+                                                                               # 运算结果是每个特征点的概率
+    loss = np.mean(-np.log(probs[np.arange(N),y]))      # probs[np.arange(N), y] 的含义：每个样本点（每行）预测结果（在probs中的行列标签）
+
+    dx = probs.copy()
+
+    dx[np.arange(N), y] -= 1
+
+    dx /= N
+    ###########################################################################
+    #                             END OF YOUR CODE                            #
+    ###########################################################################
+    return loss, dx
+
+
 def affine_forward(x, w, b):
     """
     Computes the forward pass for an affine (fully-connected) layer.
@@ -27,7 +65,9 @@ def affine_forward(x, w, b):
     # TODO: Implement the affine forward pass. Store the result in out. You   #
     # will need to reshape the input into rows.                               #
     ###########################################################################
-
+    N = x.shape[0]
+    x_reshaped = x.reshape(N, -1)
+    out = x_reshaped.dot(w) + b
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -56,7 +96,14 @@ def affine_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the affine backward pass.                               #
     ###########################################################################
+    N = x.shape[0]
+    x_reshaped = x.reshape(N, -1)
 
+    dx = dout.dot(w.T).reshape(x.shape)
+
+    dw = x_reshaped.T.dot(dout)
+
+    db = np.sum(dout, axis=0)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -78,11 +125,11 @@ def relu_forward(x):
     ###########################################################################
     # TODO: Implement the ReLU forward pass.                                  #
     ###########################################################################
-
+    out = np.maximum(0,x)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
-    cache = x
+    cache = x       # 由于relu会把负数值过滤，反向求导时应该要有原数据正负值
     return out, cache
 
 
@@ -101,7 +148,7 @@ def relu_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the ReLU backward pass.                                 #
     ###########################################################################
-
+    dx = dout * (x>0)   # 若x<0,dout/dx=0; 若x>=0,dout/dx=1
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -694,28 +741,3 @@ def svm_loss(x, y):
     ###########################################################################
     return loss, dx
 
-
-def softmax_loss(x, y):
-    """
-    Computes the loss and gradient for softmax classification.
-
-    Inputs:
-    - x: Input data, of shape (N, C) where x[i, j] is the score for the jth
-      class for the ith input.
-    - y: Vector of labels, of shape (N,) where y[i] is the label for x[i] and
-      0 <= y[i] < C
-
-    Returns a tuple of:
-    - loss: Scalar giving the loss
-    - dx: Gradient of the loss with respect to x
-    """
-    loss, dx = None, None
-
-    ###########################################################################
-    # TODO: Copy over your solution from A1.
-    ###########################################################################
-
-    ###########################################################################
-    #                             END OF YOUR CODE                            #
-    ###########################################################################
-    return loss, dx
