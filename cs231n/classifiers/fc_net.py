@@ -114,7 +114,9 @@ class TwoLayerNet(object):
         dh1, grads['W2'], grads['b2'] = affine_backward(dscores, cache2)
         dX, grads['W1'], grads['b1'] = affine_relu_backward(dh1, cache1)
 
-        loss += 0.5 * self.reg * (np.sum(self.params['W1']**2) + np.sum(self.params['W2']**2))
+        reg_loss = 0.5 * self.reg * (np.sum(self.params['W1']**2)
+                                      + np.sum(self.params['W2']**2))
+        loss += reg_loss
         grads['W2'] += self.reg * self.params['W2']
         grads['W1'] += self.reg * self.params['W1']
 
@@ -130,7 +132,7 @@ class TwoLayerNet(object):
       params = self.params
       np.save(fpath, params)
       print(fname, "saved.")
-    
+
     def load(self, fname):
       """Load model parameters."""
       fpath = os.path.join(os.path.dirname(__file__), "../saved/", fname)
@@ -318,7 +320,7 @@ class FullyConnectedNet(object):
       params = self.params
       np.save(fpath, params)
       print(fname, "saved.")
-    
+
     def load(self, fname):
       """Load model parameters."""
       fpath = os.path.join(os.path.dirname(__file__), "../saved/", fname)

@@ -1,4 +1,3 @@
-from builtins import range
 import numpy as np
 
 # import numexpr as ne # ~~DELETE LINE~~
@@ -27,9 +26,8 @@ def softmax_loss(x, y):
 
     x_shift = x - np.max(x, axis=1, keepdims=True)
 
-    probs = np.exp(x_shift)/ np.sum(np.exp(x_shift), axis=1, keepdims=True)    # x_shift 是原输入形状的矩阵，sum 逐个样本特征求和
-                                                                               # 运算结果是每个特征点的概率
-    loss = np.mean(-np.log(probs[np.arange(N),y]))      # probs[np.arange(N), y] 的含义：每个样本点（每行）预测结果（在probs中的行列标签）
+    probs = np.exp(x_shift) / np.sum(np.exp(x_shift), axis=1, keepdims=True)
+    loss = np.mean(-np.log(probs[np.arange(N), y]))
 
     dx = probs.copy()
 
