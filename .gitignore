@@ -12,3 +12,6 @@ __pycache__/
 
 # Jupyter检查点
 .ipynb_checkpoints/
+
+.gitignore
+.claude
