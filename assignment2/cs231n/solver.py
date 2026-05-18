@@ -9,7 +9,7 @@ import pickle as pickle
 
 import numpy as np
 
-from cs231n import optim
+from assignment1.cs231n import optim
 
 
 class Solver(object):
